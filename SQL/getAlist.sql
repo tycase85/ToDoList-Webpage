@@ -1,0 +1,10 @@
+DELIMITER //
+DROP PROCEDURE IF EXISTS getAList  //
+
+CREATE PROCEDURE getAList(IN listIDIn int)
+BEGIN
+   SELECT *
+      FROM liststable
+      WHERE ID = listIDIn;
+END//
+DELIMITER ;

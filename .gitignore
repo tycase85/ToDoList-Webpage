@@ -1,0 +1,6 @@
+settings.py
+key.pem
+flask_session/*
+cert.pem
+cookie-jar
+__pycache__/*

@@ -1,0 +1,107 @@
+#%RAML 1.0
+title: To-Do-List
+version: v1
+protocols: [ HTTPS ]
+securitySchemes:
+
+types:
+  list:
+    properties:
+      id: integer
+      name: string
+
+  {item}:
+    properties:
+      item-id: integer
+      selected: boolean
+      items:string
+
+
+/list:
+  get:
+    description: List all users list;
+    queryParameters:
+      name: string
+    responses:
+      200:
+        body:
+          application/json:
+            type: list
+            example: |
+              [
+                {"id" : 1, "name" : "To-do"}
+                {"id" : 2, "name" : "grocery list"}
+              ]
+      404:
+        body:
+          application/json:
+            type: Error
+            example: { "message" : "Not found", "code" : 1001 }
+  post:
+    description: Create new item list.
+    body:
+      application/json:
+        type: list
+        example: {"id" : 22, "To-do"}
+    responses:
+      201:
+        body:
+          application/json:
+            type: listT: Retur
+            example: {"id" : 22, "To-do"}
+      404:
+        body:
+          application/json:
+            type: Error
+            example: { "message" : "Not found", "code" : 1001 }
+
+
+
+  /list/{item}:
+    get:
+      description:  Get item by id.
+      queryParameters:
+        name: sting
+        item-id: integer
+      responses:
+        200:
+          body:
+            application/json:
+             type: item
+             example:{"id" : 1, "selected" : "false", "name" : "pay bill Oct 31/2017"}
+        404:
+          body:
+            application/json:
+              type: Error
+                example: { "message" : "Not found", "code" : 1001 }
+
+    put:
+      description: Update item given gift id.
+      responses:
+        200:
+          body:
+            application/json:
+              type: item
+              example:{"id" : 1, "selected" : "true", "name" : "pay bill Oct 31/2017"}
+        401:
+          body:
+            application/json:
+              type: item
+        404:
+          body:
+            application/json:
+              type: Error
+                example: { "message" : "Not found", "code" : 1001 }
+
+    delete:
+      description: delete item given item id.
+      responses:
+        200:
+          body:
+            application/json:
+              type: item
+        404:
+          body:
+            application/json:
+              type: Error
+                example: { "message" : "Not found", "code" : 1001 }
