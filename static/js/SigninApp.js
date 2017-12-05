@@ -12,6 +12,7 @@ angular.module('SigninApp', [])
 				if(data.status == 201) {
 					console.log("Accepted Login");
 					$scope.isLoggedIn = true;
+					$scope.username = user.username;
 					// You're in!
 					// But does the session carry? Let's try some other endpoint that requires a login
 					$http.get('https://info3103.cs.unb.ca:52799/lists').then( function(data){
@@ -56,37 +57,84 @@ angular.module('SigninApp', [])
 //not sure how to to do this one
 	//GET ALL LISTS
 	//checks the what the user is and returns all the list if any
-	$scope.getlists = function(e, input) {
+	$scope.getlists = function(){
 		var url = 'https://info3103.cs.unb.ca:52799/lists'; //get all lists
 		$http.get(url).success( function(response) { //success
-//Do stomething
-// not sure
+			$scope.listR = response;
+			console.log(response);
+			var results = [];
+			var i = 0;
+			var total = 5;
+			for( i in response){
+				//results.push(response[i]);
+				console.log(response[i].listName);
+				$scope.lists = response[i].listName;
+				console.log($scope.lists);
+				i++;
+			}
+
+			for(i=0;i<total;i++){
+				$scope.allLists = response[i].listName;
+			}
+			//lists = {results};
+			//$scope.lists = response.listName;
+			//console.log(response.listName)
+		});
+
+		// $http.get(url).success( function(response) { //success
+		// 	var list = 0;
+		// 	var results = []
+		// 	for ( list in response){
+		// 		results.push(response[list].id);
+		// 		list++;
+		// 		console.log(list);
+		// 		console.log(response[list]);
+		// 	}
+    //   $scope.search_results = results;
+    // })
+
+}
+//////////////////////////////////////////////////////////////////////////////////
+
+$scope.getitems = function(id){
+	var url = 'https://info3103.cs.unb.ca:52799/lists/'+id; //get all lists
+	$http.get(url).success( function(response) { //success
+		console.log(response);
+		$scope.itemR = response;
+		var results = [];
+		var i = 0;
+		var total = 5;
+
+		for(i=0;i<total;i++){
+			$scope.allItems = response[i].listName;
 		}
-	);
-	}
+	});
+
+
+}
+
+
+
 
 //********************************///
-
+// WORKING JUST NEED IT TO DISPLAY ON UI
 	//POST A NEW LIST
 	$scope.postlists = function() {
 		var url = 'https://info3103.cs.unb.ca:52799/lists';
 		var input = {
-			//keep checking seeion for which user it is
-			postedBy: session['username'],
 			//what is the text box called
-			listName:$('#listName').val(),
+			listName:$('#addlist').val(),
 		}
-		var data = JSON.stringify(dat);
+		var data = JSON.stringify(input);
 		var postlist = "";
 
 		$http({ method: 'POST', url: url, data: data }).then(
 		 function(response) { //success
 			 if (response.status == 200) {
-				$scope.getlists(dat.listName);
+				$scope.getlists(data.listName);
 				$scope.postMessage = "Post was Successful"; //this works
-				console.log(session['username']);
-				//what is the html
-				document.getElementById("postlistItem").reset();
+
+				$scope.addlist = null
 			 }
 			 if (response.status == 401) {
 				$scope.postMessage = "Unauthorized: Please Log in ";
@@ -95,23 +143,25 @@ angular.module('SigninApp', [])
 		);
 	}
 
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 	//GET A LISTS
 	//checks the what the user is and returns a list if it exist
-	$scope.getlists = function(id) {
-		var url = 'https://info3103.cs.unb.ca:52799/lists' + id; //get a lists
-		$http.get(url).success( function(response) { //success
-			listID = response
-			$scope.reviews = listID
-
-
-		});
-	}
-//********************************///
-
+// 	$scope.getlists = function(id) {
+// 		var url = 'https://info3103.cs.unb.ca:52799/lists' + id; //get a lists
+// 		$http.get(url).success( function(response) { //success
+// 			listID = response
+// 			$scope.reviews = listID
+//
+//
+// 		});
+// 	}
+// //********************************///
+//
 	//POST A NEW ITEM TO {listID}
-$scope.postlists = function() {
+$scope.postitem = function(id) {
 	var url = 'https://info3103.cs.unb.ca:52799/lists'+ id; //get all lists
 	var input = {
 		//keep checking seeion for which user it is
@@ -126,11 +176,10 @@ $scope.postlists = function() {
 	$http({ method: 'POST', url: url, data: data }).then(
 	 function(response) { //success
 		 if (response.status == 200) {
-			$scope.getlists(dat.listID);
+			$scope.postitem(dat.itemID);
 			$scope.postMessage = "Post was Successful"; //this works
-			console.log(session['username']);
-			//what is the html
-			document.getElementById("postlistItem").reset();
+
+			$scope.additem = null
 		 }
 		 if (response.status == 401) {
 			$scope.postMessage = "Unauthorized";
@@ -138,41 +187,41 @@ $scope.postlists = function() {
 	 }
 	);
 }
-//********************************///
-//DELETE A LIST {listID}
-$scope.deleteItem = function(L_id) {
-	var url = "https://info3103.cs.unb.ca:52799/lists/" + id;
-	var templistID = $scope.reviews[1].listID;
-
-	$http({ method: 'DELETE', url: url}).then(
-		function(response) { //success
-			if (response.status == 200){
-				$scope.getlists(templistID);
-			}
-		},
-		function(response) { //error
-			if (response.status == 401){}
-		});
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-
-	//DELETE AN ITEM {itemName}
-	$scope.deleteItem = function(L_id,I_id) {
-		var url = "https://info3103.cs.unb.ca:52799/lists/" + id/ + id;
-		var templistID = $scope.reviews[1].listID;
-		var tempitemID = $scope.reviews[2].itemID;
-
-		$http({ method: 'DELETE', url: url}).then(
-			function(response) { //success
-				if (response.status == 200){
-					$scope.getlists(templistID);
-				}
-			},
-			function(response) { //error
-				if (response.status == 401){}
-			});
-	}
+// //********************************///
+// //DELETE A LIST {listID}
+// $scope.deleteItem = function(L_id) {
+// 	var url = "https://info3103.cs.unb.ca:52799/lists/" + id;
+// 	var templistID = $scope.reviews[1].listID;
+//
+// 	$http({ method: 'DELETE', url: url}).then(
+// 		function(response) { //success
+// 			if (response.status == 200){
+// 				$scope.getlists(templistID);
+// 			}
+// 		},
+// 		function(response) { //error
+// 			if (response.status == 401){}
+// 		});
+// }
+//
+// ///////////////////////////////////////////////////////////////////////////////////////////////
+//
+// 	//DELETE AN ITEM {itemName}
+// 	$scope.deleteItem = function(L_id,I_id) {
+// 		var url = "https://info3103.cs.unb.ca:52799/lists/" + id/ + id;
+// 		var templistID = $scope.reviews[1].listID;
+// 		var tempitemID = $scope.reviews[2].itemID;
+//
+// 		$http({ method: 'DELETE', url: url}).then(
+// 			function(response) { //success
+// 				if (response.status == 200){
+// 					$scope.getlists(templistID);
+// 				}
+// 			},
+// 			function(response) { //error
+// 				if (response.status == 401){}
+// 			});
+// 	}
 
 
 }]);
